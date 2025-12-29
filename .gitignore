@@ -1,0 +1,34 @@
+# --------------------
+# Environment secrets
+# --------------------
+.env
+.env.*
+!.env.example
+
+# --------------------
+# Dependencies
+# --------------------
+node_modules/
+
+# --------------------
+# Logs
+# --------------------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --------------------
+# Generated AI outputs
+# --------------------
+src/output/
+
+
+# --------------------
+# OS / Editor
+# --------------------
+.DS_Store
+Thumbs.db
+
+.vscode/
+!.vscode/extensions.json
