@@ -74,6 +74,6 @@ These files are typically generated at runtime and should not be committed to ve
 All scripts rely on environment variables defined in `.env`:
 
 ```env
-OPENAI_API_KEY=your_api_key
+OPENAI_API_KEY=sk-proj-xxxx
 OPENAI_MODEL=gpt-5-nano
-OPENAI_PROMPT_ID=prompt_xxxxx
+OPENAI_PROMPT_ID=pmpt_xxxxx

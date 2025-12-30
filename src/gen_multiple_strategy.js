@@ -54,6 +54,8 @@ const featureInputs = [
     vertical_clearance: 0,
     surface_type: "flat",
   },
+
+  // add more feature inputs here
 ];
 
 const outputDir = path.join(__dirname, "output");
@@ -77,7 +79,7 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Core generator
+// main generator function
 async function generateStrategiesForFeatures() {
   const accumulatedStrategies = [];
   let lastResponse = null;
@@ -147,7 +149,7 @@ async function generateStrategiesForFeatures() {
             raw_output: err.message,
           });
         } else {
-          await sleep(500 * attempt); // basic backoff
+          await sleep(500 * attempt); // exponential backoff
         }
       }
     }

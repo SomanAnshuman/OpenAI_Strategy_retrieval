@@ -31,7 +31,7 @@ const REASONING_FILE_PATH = path.join(outputDir, REASONING_FILE);
 const RESPONSE_FILE = "complete_response.json";
 const RESPONSE_FILE_PATH = path.join(outputDir, RESPONSE_FILE);
 
-// feature inputs
+// feature inputs (EDIT HERE to generate strategy)
 const rawInputs = {
   cam_software: "siemens",
   material_type: "hard",

@@ -52,6 +52,7 @@ try {
 
 const SYSTEM_PROMPT = systemPrompt(knowledgeBaseContext);
 
+// feature inputs (EDIT HERE to generate strategy)
 const rawInputs = {
   cam_software: "siemens",
   material_type: "hard",
