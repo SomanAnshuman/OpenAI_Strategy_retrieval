@@ -75,5 +75,5 @@ All scripts rely on environment variables defined in `.env`:
 
 ```env
 OPENAI_API_KEY=your_api_key
-OPENAI_MODEL=gpt-5
+OPENAI_MODEL=gpt-5-nano
 OPENAI_PROMPT_ID=prompt_xxxxx
