@@ -2,9 +2,9 @@
 // WRITES FINAL STRATEGIES TO total-strategies.json
 import OpenAI from "openai";
 import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { mapInputsToVariables } from "./utils.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -179,6 +179,8 @@ async function generateStrategiesForFeatures() {
   }
 }
 
-generateStrategiesForFeatures().catch((err) => {
+try {
+  await generateStrategiesForFeatures();
+} catch (err) {
   console.error("Fatal error:", err);
-});
+}

@@ -2,9 +2,9 @@
 // WRITES FINAL STRATEGY TO final-strategy.json
 import OpenAI from "openai";
 import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { mapInputsToVariables, systemPrompt } from "./utils.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -234,7 +234,7 @@ async function generateStrategy() {
         console.log(
           `\nThe complete reasoning steps written to: ${RESPONSE_FILE}`
         );
-      } catch (e) {
+      } catch {
         console.log("Could not parse JSON. Raw output:", rawContent);
       }
     } else {
@@ -245,4 +245,8 @@ async function generateStrategy() {
   }
 }
 
-generateStrategy();
+try {
+  await generateStrategy();
+} catch (err) {
+  console.error("Fatal error:", err);
+}
