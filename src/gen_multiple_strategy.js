@@ -59,6 +59,10 @@ const featureInputs = [
 ];
 
 const outputDir = path.join(__dirname, "output");
+// create output directory if it does not exist
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
 const STRATEGY_FILE = "total-strategies.json";
 const STRATEGY_FILE_PATH = path.join(outputDir, STRATEGY_FILE);
 const REASONING_FILE = "complete_reasoning.json";
@@ -103,6 +107,7 @@ async function generateStrategiesForFeatures() {
           prompt: {
             id: process.env.OPENAI_PROMPT_ID,
             variables: promptVariables,
+            version: "8",
           },
         });
 

@@ -18,6 +18,11 @@ const openai = new OpenAI({
 });
 
 const outputDir = path.join(__dirname, "output");
+// create output directory if it does not exist
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
+
 const STRATEGY_FILE = "final-strategy.json";
 const STRATEGY_FILE_PATH = path.join(outputDir, STRATEGY_FILE);
 const REASONING_FILE = "complete_reasoning.json";

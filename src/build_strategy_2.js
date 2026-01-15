@@ -3,10 +3,7 @@ import fs from "node:fs";
 import OpenAI from "openai";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  developerPrompt,
-  flattenInputsToVariables,
-} from "./utils.js";
+import { developerPrompt, flattenInputsToVariables } from "./utils.js";
 import { getMachiningStrategy } from "./amplify/api.js";
 import { configureAmplify, signInUser } from "./amplify/configureAmplify.js";
 
@@ -16,12 +13,16 @@ dotenv.config({
   path: path.resolve(__dirname, "../.env"),
 });
 configureAmplify(process.env);
-await signInUser();
+await signInUser(process.env);
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 const outputDir = path.join(__dirname, "output");
+// create output directory if it does not exist
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
 const STRATEGY_FILE = "final-strategy.json";
 const STRATEGY_FILE_PATH = path.join(outputDir, STRATEGY_FILE);
 const REASONING_FILE = "complete_reasoning.json";
@@ -91,11 +92,11 @@ const rawInputs = {
 
 async function generateStrategy() {
   try {
-    console.log("-> Preparing variables...");
+    console.log("-> Fetching strategy from KNOWLEDGE BASE...");
     // 1. Get Baseline (Deterministic)
     let res;
     try {
-      res = await getMachiningStrategy([{ ...rawInputs }]);
+      res = await getMachiningStrategy([rawInputs], process.env);
     } catch (error) {
       console.log("Error in fetching strategy: ", error);
       return;
@@ -106,6 +107,7 @@ async function generateStrategy() {
     console.log("---Strategy fetched from KNOWLEDGE BASE---");
     console.log(JSON.stringify(baselineStrategy, null, 2));
 
+    console.log("-> Preparing variables...");
     // 2. Get Inputs for LLM message
     const variableMap = flattenInputsToVariables(rawInputs);
 

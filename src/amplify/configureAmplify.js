@@ -1,5 +1,5 @@
-import { Amplify } from 'aws-amplify';
-import { getCurrentUser, signIn } from 'aws-amplify/auth';
+import { Amplify } from "aws-amplify";
+import { getCurrentUser, signIn } from "aws-amplify/auth";
 
 export function configureAmplify(env) {
   Amplify.configure({
@@ -33,11 +33,11 @@ export function configureAmplify(env) {
   });
 }
 
-export async function signInUser() {
+export async function signInUser(env) {
   try {
     await signIn({
-      username: process.env.TEST_USERNAME,
-      password: process.env.TEST_PASSWORD,
+      username: env.TEST_USERNAME,
+      password: env.TEST_PASSWORD,
     });
 
     const user = await getCurrentUser();

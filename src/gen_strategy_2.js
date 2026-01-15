@@ -1,11 +1,11 @@
-// THIS FILE GENERATES STRATEGY FOR A SINGLE FEATURE USING PROMPT ON OPENAI DASHBOARD
-// WRITES FINAL STRATEGY TO final-strategy.json
-import OpenAI from "openai";
 import dotenv from "dotenv";
 import fs from "node:fs";
+import OpenAI from "openai";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { mapInputsToVariables } from "./utils.js";
+import { flattenInputsToVariables } from "./utils.js";
+import { configureAmplify, signInUser } from "./amplify/configureAmplify.js";
+import { getMachiningStrategy } from "./amplify/api.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +13,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
 });
+configureAmplify(process.env);
+await signInUser(process.env);
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -34,26 +36,57 @@ const RESPONSE_FILE_PATH = path.join(outputDir, RESPONSE_FILE);
 // feature inputs (EDIT HERE to generate strategy)
 const rawInputs = {
   cam_software: "siemens",
-  material_type: "hard",
-  hole: "solid",
-  quantity: 1,
-  depth: 600,
-  diameter: {
-    upper_tolerance: 0.1,
-    value: 30,
-    lower_tolerance: -0.1,
+  measurement_unit: "mm",
+  linked_pmi_features: [],
+  model_version: "v1",
+
+  // feature data starts here
+  feature_id: "5a927fa0-22f8-4b3f-928d-564fd675b401",
+  feature_type: "hole",
+  feature_info: {
+    hole: "solid",
+    quantity: 1,
+    depth: 600,
+    diameter: {
+      upper_tolerance: 0.1,
+      value: 30,
+      lower_tolerance: -0.1,
+    },
+    sequential: "no",
+    horizontal_clearance: 17.875,
+    bottom_type: "through",
+    vertical_clearance: 0,
+    surface_type: "flat",
   },
-  sequential: "no",
-  horizontal_clearance: 17.875,
-  bottom_type: "through",
-  vertical_clearance: 0,
-  surface_type: "flat",
+  material_info: {
+    material: "p | steel",
+    sub_material: "alloy steel",
+  },
+  machine_info: { name: "Default", axes: "3", rpm: 20000 },
+  feature_name: "simple_hole",
 };
 
 async function generateStrategy() {
   try {
-    console.log("-> Preparing variables...");
-    const promptVariables = mapInputsToVariables(rawInputs);
+    console.log("-> Fetching strategy from KNOWLEDGE BASE...");
+    let res;
+    try {
+      res = await getMachiningStrategy([rawInputs], process.env);
+    } catch (error) {
+      console.log("Error in fetching strategy: ", error);
+      return;
+    }
+    const baselineStrategy = {
+      passes: res?.data.strategies?.[0]?.machining_strategy?.[0]?.passes,
+    };
+    const baseline_strategy_json = JSON.stringify(baselineStrategy, null, 2);
+    console.log("---Strategy fetched from KNOWLEDGE BASE---");
+    console.log(baseline_strategy_json);
+
+    // Preparing variables
+    const inputVariables = flattenInputsToVariables(rawInputs);
+    const promptVariables = { ...inputVariables, baseline_strategy_json };
+    console.log("-> Prepared variables...");
 
     console.log("-> Calling Responses API...");
     const response = await openai.responses.create({
@@ -62,7 +95,7 @@ async function generateStrategy() {
       prompt: {
         id: process.env.OPENAI_PROMPT_ID,
         variables: promptVariables,
-        version: "8",
+        // version: process.env.OPENAI_PROMPT_VERSION,
       },
     });
 
